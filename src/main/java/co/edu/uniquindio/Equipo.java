@@ -39,6 +39,14 @@ public abstract class Equipo {
         this.modelo = modelo;
     }
 
+    public CondicionEquipo getCondicion() {
+        return condicion;
+    }
+
+    public void setCondicion(CondicionEquipo condicion) {
+        this.condicion = condicion;
+    }
+
     @Override
     public String toString() {
         return "[" + codigo + "] " + marca + " " + modelo + " (" + condicion + ")";

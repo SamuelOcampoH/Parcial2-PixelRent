@@ -15,7 +15,7 @@ public class PixelRent {
         this.listaReservas = new Reserva[50];
     }
 
-    // ================= CRUD Y VALIDACIÓN DE DUPLICIDAD =================
+    // ================= CRUD Y VALIDACIONES =================
     public boolean registrarCliente(Cliente cliente) {
         if (cliente == null || buscarCliente(cliente.getIdentificacion()) != null) {
             return false;
@@ -104,7 +104,7 @@ public class PixelRent {
         return null;
     }
 
-    // ================= FUNCIONALIDADES DE RESERVA Y REGLAS DE NEGOCIO =================
+    // ================= FUNCIONALIDADES Y REGLAS DE NEGOCIO =================
     public boolean agregarEquipoAReserva(String codReserva, String codEquipo, int horas) {
         Reserva res = buscarReserva(codReserva);
         Equipo eq = buscarEquipo(codEquipo);
@@ -112,8 +112,7 @@ public class PixelRent {
         if (res == null || eq == null || horas <= 0) {
             return false;
         }
-        // Solo agregar si la condición es disponible
-        if (!eq.getCondicion().equalsIgnoreCase("disponible")) {
+        if (eq.getCondicion() != CondicionEquipo.DISPONIBLE) {
             return false;
         }
         DetalleReserva detalle = new DetalleReserva(eq, horas);
@@ -135,19 +134,15 @@ public class PixelRent {
         if (res == null) {
             return false;
         }
-        // 1. Bloquear confirmación si fue cancelada o finalizada previamente
-        if (res.getEstado().equalsIgnoreCase("cancelada") || res.getEstado().equalsIgnoreCase("finalizada")) {
+        if (res.getEstado() == EstadoReserva.CANCELADA || res.getEstado() == EstadoReserva.FINALIZADA) {
             return false;
         }
-        // 2. Debe contener al menos un equipo
         if (res.cantidadEquipos() == 0) {
             return false;
         }
-        // 3. Si incluye dron, obligatorio operador asignado
         if (res.tieneDron() && res.getOperador() == null) {
             return false;
         }
-        // 4. Ningún equipo puede estar en otra reserva confirmada en la misma fecha y turno
         DetalleReserva[] detallesActuales = res.getListaDetalles();
         for (int i = 0; i < detallesActuales.length; i++) {
             if (detallesActuales[i] != null) {
@@ -158,17 +153,17 @@ public class PixelRent {
             }
         }
 
-        res.setEstado("confirmada");
+        res.setEstado(EstadoReserva.CONFIRMADA);
         return true;
     }
 
-    private boolean equipoOcupadoEnOtraReserva(String codEquipo, String fecha, String turno, String codReservaExcluir) {
+    private boolean equipoOcupadoEnOtraReserva(String codEquipo, String fecha, Turno turno, String codReservaExcluir) {
         for (int i = 0; i < listaReservas.length; i++) {
             Reserva r = listaReservas[i];
-            if (r != null && r.getEstado().equalsIgnoreCase("confirmada")
+            if (r != null && r.getEstado() == EstadoReserva.CONFIRMADA
                     && !r.getCodigo().equalsIgnoreCase(codReservaExcluir)
                     && r.getFecha().equalsIgnoreCase(fecha)
-                    && r.getTurno().equalsIgnoreCase(turno)) {
+                    && r.getTurno() == turno) {
 
                 DetalleReserva[] dets = r.getListaDetalles();
                 for (int j = 0; j < dets.length; j++) {
@@ -181,28 +176,32 @@ public class PixelRent {
         return false;
     }
 
-    public boolean cambiarEstadoReserva(String codReserva, String nuevoEstado) {
+    public boolean cancelarReserva(String codReserva) {
         Reserva res = buscarReserva(codReserva);
-        if (res == null) {
-            return false;
+        if (res != null && res.getEstado() != EstadoReserva.FINALIZADA) {
+            res.setEstado(EstadoReserva.CANCELADA);
+            return true;
         }
-        if (nuevoEstado.equalsIgnoreCase("confirmada")) {
-            return confirmarReserva(codReserva);
-        } else if (nuevoEstado.equalsIgnoreCase("cancelada") || nuevoEstado.equalsIgnoreCase("finalizada")) {
-            res.setEstado(nuevoEstado.toLowerCase());
+        return false;
+    }
+
+    public boolean finalizarReserva(String codReserva) {
+        Reserva res = buscarReserva(codReserva);
+        if (res != null && res.getEstado() == EstadoReserva.CONFIRMADA) {
+            res.setEstado(EstadoReserva.FINALIZADA);
             return true;
         }
         return false;
     }
 
     // ================= CONSULTAS Y REPORTES =================
-    public Equipo[] consultarEquiposDisponibles(String fecha, String turno) {
+    public Equipo[] consultarEquiposDisponibles(String fecha, Turno turno) {
         Equipo[] disponibles = new Equipo[listaEquipos.length];
         int pos = 0;
 
         for (int i = 0; i < listaEquipos.length; i++) {
             Equipo eq = listaEquipos[i];
-            if (eq != null && eq.getCondicion().equalsIgnoreCase("disponible")) {
+            if (eq != null && eq.getCondicion() == CondicionEquipo.DISPONIBLE) {
                 if (!equipoOcupadoEnOtraReserva(eq.getCodigo(), fecha, turno, "")) {
                     disponibles[pos] = eq;
                     pos++;
@@ -218,7 +217,7 @@ public class PixelRent {
 
         for (int i = 0; i < listaReservas.length; i++) {
             Reserva r = listaReservas[i];
-            if (r != null && r.getEstado().equalsIgnoreCase("confirmada")
+            if (r != null && r.getEstado() == EstadoReserva.CONFIRMADA
                     && r.getCliente() != null
                     && r.getCliente().getIdentificacion().equalsIgnoreCase(identificacion)) {
                 encontradas[pos] = r;
@@ -277,4 +276,3 @@ public class PixelRent {
         this.listaReservas = listaReservas;
     }
 }
-
