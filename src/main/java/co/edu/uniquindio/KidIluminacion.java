@@ -5,7 +5,7 @@ public class KidIluminacion extends Equipo {
         private int cantidadLuces;
         private boolean tieneControlInalambrico;
 
-        public KidIluminacion(String codigo, String marca, String modelo, String condicion) {
+        public KidIluminacion(String codigo, String marca, String modelo, CondicionEquipo condicion) {
         super(codigo, marca, modelo, condicion);
             this.cantidadLuces = cantidadLuces;
             this.tieneControlInalambrico = tieneControlInalambrico;

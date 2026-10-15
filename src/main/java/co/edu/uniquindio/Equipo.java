@@ -1,12 +1,12 @@
 package co.edu.uniquindio;
 
-public class Equipo {
+public abstract class Equipo {
     private String codigo;
     private String marca;
     private String modelo;
-    private String condicion; // disponible, en mantenimiento, fuera de servicio
+    private CondicionEquipo condicion;
 
-    public Equipo(String codigo, String marca, String modelo, String condicion) {
+    public Equipo(String codigo, String marca, String modelo, CondicionEquipo condicion) {
         this.codigo = codigo;
         this.marca = marca;
         this.modelo = modelo;
@@ -37,14 +37,6 @@ public class Equipo {
 
     public void setModelo(String modelo) {
         this.modelo = modelo;
-    }
-
-    public String getCondicion() {
-        return condicion;
-    }
-
-    public void setCondicion(String condicion) {
-        this.condicion = condicion;
     }
 
     @Override

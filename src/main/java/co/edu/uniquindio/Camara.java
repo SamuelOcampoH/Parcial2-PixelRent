@@ -5,7 +5,7 @@ public class Camara extends Equipo {
     private String resolucion;
     private boolean tieneEstabilizador;
 
-    public Camara(String codigo, String marca, String modelo, String condicion, String resolucion, boolean tieneEstabilizador) {
+    public Camara(String codigo, String marca, String modelo, CondicionEquipo condicion, String resolucion, boolean tieneEstabilizador) {
         super(codigo, marca, modelo, condicion);
         this.resolucion = resolucion;
         this.tieneEstabilizador = tieneEstabilizador;
