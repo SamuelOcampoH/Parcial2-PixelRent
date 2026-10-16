@@ -245,8 +245,8 @@ public class Main {
         empresa.registrarCliente(new Cliente("Maria Lopez", "102", 7469876, "maria@gmail.com"));
 
         // Operadores
-        empresa.registrarOperador(new Operador("OP01", "Carlos DronePilot", "Piloto Profesional UAS", 5));
-        empresa.registrarOperador(new Operador("OP02", "Ana Luces", "Especialista Iluminacion", 3));
+        empresa.registrarOperador(new Operador("Carlos DronePilot", "OP01", "Piloto Profesional UAS", 5));
+        empresa.registrarOperador(new Operador("Ana Luces", "OP02", "Especialista Iluminacion", 3));
 
         // Equipos
         empresa.registrarEquipo(new Camara("CAM01", "Sony", "Alpha 7 IV", CondicionEquipo.DISPONIBLE, "4K", true));
